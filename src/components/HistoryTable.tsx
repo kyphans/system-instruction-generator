@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-import { Clock, Copy } from 'lucide-react';
+import { Clock, Copy, Trash } from 'lucide-react';
 import type { HistoryEntry } from '../types';
 import toast from 'react-hot-toast';
 
 interface HistoryTableProps {
   history: HistoryEntry[];
+  setHistory: React.Dispatch<React.SetStateAction<HistoryEntry[]>>;
 }
 
-export const HistoryTable: React.FC<HistoryTableProps> = ({ history }) => {
+export const HistoryTable: React.FC<HistoryTableProps> = ({ history, setHistory }) => {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const toggleRow = (id: string) => {
@@ -25,6 +26,15 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({ history }) => {
   const handleCopy = async (value: string) => {
     await navigator.clipboard.writeText(value);
     toast.success('Copied to clipboard!');
+  };
+
+  const handleRemove = (id: string) => {
+    setHistory((prev) => {
+      const newHistory = prev.filter((entry) => entry.id !== id);
+      localStorage.setItem('promptHistory', JSON.stringify(newHistory));
+      return newHistory;
+    });
+    toast.success('Record removed!');
   };
 
   if (history.length === 0) return null;
@@ -54,7 +64,7 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({ history }) => {
             </tr>
           </thead>
           <tbody className='bg-white divide-y divide-gray-200'>
-            {history.map((entry) => (
+            {history.slice(0, 20).map((entry) => (
               <React.Fragment key={entry.id}>
                 <tr
                   className='hover:bg-gray-50'
@@ -88,13 +98,22 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({ history }) => {
                         <p>
                           <strong>Response:</strong> {entry.response}
                         </p>
-                        <button
-                          type='button'
-                          onClick={() => handleCopy(entry.response)}
-                          className='mt-10 bg-blue-200 rounded-md inline-flex items-center px-3 py-1 text-sm text-gray-600 hover:text-gray-900'>
-                          <Copy className='w-4 h-4 mr-1' />
-                          Copy
-                        </button>
+                        <div className='flex gap-2 mt-4'>
+                          <button
+                            type='button'
+                            onClick={() => handleCopy(entry.response)}
+                            className='bg-blue-200 rounded-md inline-flex items-center px-3 py-1 text-sm text-gray-600 hover:text-gray-900'>
+                            <Copy className='w-4 h-4 mr-1' />
+                            Copy
+                          </button>
+                          <button
+                            type='button'
+                            onClick={() => handleRemove(entry.id)}
+                            className='bg-red-200 rounded-md inline-flex items-center px-3 py-1 text-sm text-gray-600 hover:text-gray-900'>
+                            <Trash className='w-4 h-4 mr-1' />
+                            Remove
+                          </button>
+                        </div>
                       </div>
                     </td>
                   </tr>
