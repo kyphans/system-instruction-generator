@@ -19,12 +19,12 @@ function App() {
     localStorage.setItem('promptHistory', JSON.stringify(history));
   }, [history]);
 
-  const handleSubmit = async (systemInstruction: string, prompt: string) => {
+  const handleSubmit = async (systemInstruction: string, prompt: string, apiKey: string) => {
     setIsLoading(true);
     try {
       const response = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${
-          import.meta.env.VITE_GEMINI_API_KEY
+          apiKey || import.meta.env.VITE_GEMINI_API_KEY
         }`,
         {
           method: 'POST',
@@ -78,7 +78,7 @@ function App() {
               <PromptForm onSubmit={handleSubmit} isLoading={isLoading} />
             </div>
 
-            {response && <ResponseView response={response} />}
+            <ResponseView response={response} isLoading={isLoading} />
 
             <HistoryTable history={history} />
           </div>

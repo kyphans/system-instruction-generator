@@ -4,9 +4,23 @@ import toast from 'react-hot-toast';
 
 interface ResponseViewProps {
   response: string;
+  isLoading: boolean;
 }
 
-export const ResponseView: React.FC<ResponseViewProps> = ({ response }) => {
+export const ResponseView: React.FC<ResponseViewProps> = ({ response, isLoading }) => {
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-lg shadow-lg p-6 md:p-8">
+        <div className="animate-pulse space-y-4">
+          <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+          <div className="h-4 bg-gray-300 rounded w-5/6"></div>
+          <div className="h-4 bg-gray-300 rounded w-2/3"></div>
+          <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+        </div>
+      </div>
+    );
+  }
+
   if (!response) return null;
 
   const handleCopy = async () => {
