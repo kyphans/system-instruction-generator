@@ -1,0 +1,12 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply antialiased text-gray-900;
+}
+
+.prose {
+  @apply max-w-none;
+  @apply text-gray-700;
+}
